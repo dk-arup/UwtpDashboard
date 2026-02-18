@@ -1,0 +1,1 @@
+This dashboard visualizes real-time UWTP operational, water quality, and compliance data. It is intended for operators and engineers to monitor performance, identify issues, and support efficient, data-driven plant operation and reporting.
