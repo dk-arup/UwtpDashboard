@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanilla JS Query Builder</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Query Builder Demo</h1>
+        
+        <div class="controls">
+            <button id="open-filter-btn" class="btn primary">Filter Records</button>
+            <button id="reset-btn" class="btn secondary">Reset</button>
+        </div>
+
+        <div class="output-panel">
+            <div class="output-box">
+                <h3>SQL-like String</h3>
+                <pre id="sql-output">No filter applied</pre>
+            </div>
+            <div class="output-box">
+                <h3>JSON AST</h3>
+                <pre id="json-output">null</pre>
+            </div>
+        </div>
+
+        <h3>Sample Records (<span id="record-count">0</span>)</h3>
+        <table id="records-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Department</th>
+                    <th>Hired Date</th>
+                    <th>Active</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Records injected here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Query Builder Modal -->
+    <div id="qb-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Filter Records</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div id="qb-clauses-container">
+                    <!-- Clauses will be added here dynamically -->
+                </div>
+                
+                <div class="qb-actions">
+                    <button id="qb-add-clause" class="btn-text">+ Add Clause</button>
+                </div>
+                
+                <div class="qb-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="qb-invert">
+                        Invert Where Clause
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="qb-cancel" class="btn secondary">Cancel</button>
+                <button id="qb-apply" class="btn primary">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="query-builder.js"></script>
+</body>
+</html>

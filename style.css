@@ -1,0 +1,316 @@
+:root {
+    --primary-color: #2c3e50;
+    --accent-color: #3498db;
+    --bg-color: #f8f9fa;
+    --panel-bg: rgba(255, 255, 255, 0.95);
+    --compliant-color: #27ae60;
+    --non-compliant-color: #c0392b;
+    --text-color: #333;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-color);
+    overflow: hidden; /* Map is full screen */
+}
+
+#map {
+    height: 100vh;
+    width: 100vw;
+    z-index: 1;
+}
+
+.control-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000; /* Above map */
+    background-color: var(--panel-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    width: 280px;
+    backdrop-filter: blur(5px);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.control-panel h2 {
+    font-size: 1.1rem; /* Slightly smaller for accordion headers */
+    margin-bottom: 0; 
+    color: var(--primary-color);
+    border-bottom: none; 
+    padding-bottom: 0;
+}
+
+.accordion-item {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.accordion-header:hover {
+    opacity: 0.8;
+}
+
+.accordion-content {
+    display: none; 
+    padding-bottom: 15px;
+    padding-left: 5px;
+}
+
+.accordion-content.active {
+    display: block; 
+}
+
+/* Rotate icon when active */
+.accordion-header.active .icon {
+    transform: rotate(180deg);
+}
+
+.icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.toggle-wrapper {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    background-color: #f1f2f6;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.toggle-checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.filter-section {
+    margin-bottom: 12px;
+    border-bottom: 1px dotted #e0e0e0;
+    padding-bottom: 8px;
+}
+
+.filter-section h4 {
+    margin: 5px 0 8px 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.input-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.input-row .input-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    margin-bottom: 12px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--primary-color);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+.status-summary {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.dot.compliant {
+    background-color: var(--compliant-color);
+}
+
+.dot.non-compliant {
+    background-color: var(--non-compliant-color);
+}
+
+.action-btn {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Scrollbar for panel */
+.control-panel::-webkit-scrollbar {
+    width: 6px;
+}
+.control-panel::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+.control-panel::-webkit-scrollbar-thumb {
+    background: #ccc; 
+    border-radius: 3px;
+}
+
+/* Popup Styles */
+.leaflet-popup-content-wrapper {
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+}
+
+.popup-header {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.popup-sub {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.status-badge.compliant {
+    background-color: var(--compliant-color);
+}
+
+.status-badge.non-compliant {
+    background-color: var(--non-compliant-color);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.data-table th, .data-table td {
+    border: 1px solid #eee;
+    padding: 4px 8px;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.exceeded {
+    color: var(--non-compliant-color);
+    font-weight: bold;
+    background-color: rgba(192, 57, 43, 0.1);
+}
+
+/* Feedback Contact Overlay */
+#feedback-contact {
+    position: fixed;
+    bottom: 10px; /* Tighter to bottom */
+    left: 10px;   /* Tighter to left */
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly detailed */
+    padding: 4px 8px; /* Very compact padding */
+    border-radius: 3px;
+    font-size: 0.6rem; /* Very small font */
+    line-height: 1.2; 
+    color: #666;
+    z-index: 2000; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    border: 1px solid #ddd;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: text;
+}
+
+#feedback-contact a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#feedback-contact a:hover {
+    text-decoration: underline;
+    color: var(--accent-color);
+}
+

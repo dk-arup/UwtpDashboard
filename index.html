@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UWTP Compliance Dashboard</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="popup.css?v=2">
+    <link rel="stylesheet" href="query-builder.css?v=2">
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <div class="control-panel">
+        
+        <!-- 1. State Filter -->
+        <div class="accordion-item">
+            <div class="accordion-header active" onclick="toggleAccordion(this)">
+                <h2>State Filter</h2>
+                <span class="icon" style="transform: rotate(180deg);">▼</span>
+            </div>
+            <div class="accordion-content" style="display: block;">
+                <div class="input-group">
+                    <label for="state-select">Select State:</label>
+                    <select id="state-select" class="dropdown-select">
+                        <option value="All">All States</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Capacity Filters -->
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>Capacity Filters</h2>
+                <span class="icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <!-- Design Capacity -->
+                <div class="filter-section">
+                    <h4>Design Capacity (MLD)</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Min:</label>
+                            <input type="number" id="cap-min" placeholder="0" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label>Max:</label>
+                            <input type="number" id="cap-max" placeholder="Max" step="10">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operational Capacity -->
+                <div class="filter-section">
+                    <h4>Operational Capacity (MLD)</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Min:</label>
+                            <input type="number" id="op-cap-min" placeholder="0" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label>Max:</label>
+                            <input type="number" id="op-cap-max" placeholder="Max" step="10">
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Perf Capacity -->
+                <div class="filter-section">
+                    <h4>Operational Perf (%)</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Min:</label>
+                            <input type="number" id="op-perf-min" placeholder="0" max="100">
+                        </div>
+                        <div class="input-group">
+                            <label>Max:</label>
+                            <input type="number" id="op-perf-max" placeholder="100" max="100">
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="btn-filter-cap" class="action-btn">Show Plants</button>
+            </div>
+        </div>
+
+        <!-- 3. Pollution Analysis -->
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>Pollution Thresholds</h2>
+                <span class="icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="toggle-wrapper">
+                    <input type="checkbox" id="enable-pollution" class="toggle-checkbox">
+                    <label for="enable-pollution">Enable Visuals</label> 
+                </div>
+
+                <div id="pollution-container" style="opacity: 0.5; pointer-events: none;">
+                    
+                    <!-- Sub-mode Selector -->
+                    <div class="mode-switch" style="margin-bottom: 12px; display: flex; gap: 10px;">
+                        <label style="font-weight: normal; font-size: 0.85rem;">
+                            <input type="radio" name="poll-mode" value="analysis" checked> RAW Analysis
+                        </label>
+                        <label style="font-weight: normal; font-size: 0.85rem;">
+                            <input type="radio" name="poll-mode" value="score"> Score Analysis
+                        </label>
+                    </div>
+
+                    <!-- Mode A: RAW Analysis -->
+                    <div id="pollution-inputs">
+                        <div class="filter-section" style="border:none; padding-bottom:5px; margin-bottom:10px;">
+                            <h4 style="margin:0 0 4px 0; font-size:0.85rem; color:#2c3e50;">BOD Threshold (mg/L)</h4>
+                            <div class="input-row">
+                                <div class="input-group" style="margin-bottom:0;">
+                                    <label>Min:</label>
+                                    <input type="number" id="bod-min" value="0" min="0">
+                                </div>
+                                <div class="input-group" style="margin-bottom:0;">
+                                    <label>Max:</label>
+                                    <input type="number" id="bod-max" value="30">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group"><label>COD Max (mg/L):</label><input type="number" id="cod" value="250"></div>
+                        <div class="input-group"><label>TSS (mg/L):</label><input type="number" id="tss" value="100"></div>
+                        <div class="input-group"><label>TP (mg/L):</label><input type="number" id="tp" value="5"></div>
+                        <div class="input-group"><label>TN (mg/L):</label><input type="number" id="tn" value="100"></div>
+                        <div class="input-group"><label>FC (MPN):</label><input type="number" id="fc" value="1000"></div>
+                    </div>
+
+                    <!-- Mode B: Score Analysis -->
+                    <div id="score-inputs" style="display: none;">
+                        <p class="subtitle">Filter by Performance Score (0-60)</p>
+                        <div class="input-group">
+                            <label>Min Total Score:</label>
+                            <input type="number" id="min-score" value="0" min="0" max="60">
+                        </div>
+                        <div class="input-group">
+                            <label>Max Total Score:</label>
+                            <input type="number" id="max-score" value="60" min="0" max="60">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 4. Advanced Query Filter -->
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h2>Advanced Query Filter</h2>
+                    <span class="icon">▼</span>
+                </div>
+                <!-- REMOVED 'style="display:none"' if present, ensure class matches css -->
+                <div class="accordion-content">
+                    <button id="open-advanced-filter" class="action-btn" style="width: 100%; margin: 10px 0;">Open Advanced Filter</button>
+                    <div id="filter-status" style="font-size: 0.8rem; color: #7f8c8d; text-align: center;">No active advanced filter</div>
+                </div>
+            </div>
+
+            <div class="status-summary">
+                <div class="status-item">Plants Shown: <strong id="count-total">0</strong></div>
+            </div>
+        </div>
+    </div> <!-- END SIDEBAR -->
+
+    <!-- Modal and Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Advanced Query Builder Modal -->
+    <div id="query-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Deep Query Builder</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="query-builder-body">
+                <div id="query-rows-container">
+                    <!-- Dynamic Rows Go Here -->
+                </div>
+                
+                <button id="add-condition-btn" class="btn-secondary">+ Add Condition</button>
+            </div>
+
+            <div class="modal-footer">
+                <div class="results-preview">
+                    <span>Matching: <strong id="preview-count">0</strong> plants</span>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary close-modal">Cancel</button>
+                    <button id="apply-query-btn" class="btn-primary">Apply Filter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedback-contact" class="feedback-contact">
+        <div style="font-weight:bold; color:#e74c3c; margin-bottom:4px;">Website is in development stage</div>
+        <div style="margin-bottom:4px;">For feedback:</div>
+        <div>Gaurav Bhat (<a href="mailto:gaurav.bhat@arup.com">gaurav.bhat@arup.com</a>)</div>
+        <div>Dr. Dinesh Kumar (<a href="mailto:dinesh.kumar@arup.com">dinesh.kumar@arup.com</a>)</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
