@@ -230,7 +230,7 @@ function renderPopupChart(canvas, plant) {
 
 async function loadBoundaries() {
     try {
-        const response = await fetch('data/state_boundary.geojson');
+        const response = await fetch('data/state_boundary.json');
         if (!response.ok) throw new Error("Failed to load boundaries");
         const geoData = await response.json();
         
@@ -1047,3 +1047,19 @@ function createScorePopup(plant) {
         </div>
     `;
 }
+
+// Contact Form Handler
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // In a real app, you would send data to a backend here.
+            // For now, we simulate a successful submission.
+            const name = document.getElementById('contact-name').value;
+            alert('Thank you, ' + name + '! Your message has been sent.');
+            contactForm.reset();
+        });
+    }
+});
+

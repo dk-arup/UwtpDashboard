@@ -300,6 +300,60 @@ body {
     background-color: rgba(192, 57, 43, 0.1);
 }
 
+/* Contact Form Styles */
+#contact-form .input-group {
+    margin-bottom: 15px;
+}
+
+#contact-form textarea {
+    resize: vertical;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    width: 100%;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+#contact-form textarea:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+#contact-form button[type="submit"] {
+    background-color: #e67e22; /* Orange accent */
+    margin-top: 10px;
+}
+
+#contact-form button[type="submit"]:hover {
+    background-color: #d35400;
+}
+
+#contact-form label {
+    font-size: 0.8rem;
+}
+
+#contact-form .radio-group,
+#contact-form .checkbox-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+#contact-form .radio-group label,
+#contact-form .checkbox-group label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+#contact-form p a:hover {
+    text-decoration: underline;
+}
+
 /* Feedback Contact Overlay */
 #feedback-contact {
     position: fixed;
