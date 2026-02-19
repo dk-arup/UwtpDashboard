@@ -1048,11 +1048,49 @@ function createScorePopup(plant) {
     `;
 }
 
-// Contact Form Handler
-// We are using Formspree for handling form submissions directly in HTML.
-// No custom JS submit handler needed unless we want AJAX submission.
+// Contact Form Handler - Using mailto: protocol
 document.addEventListener('DOMContentLoaded', function() {
-   // Optional: Add custom validation here if needed
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Gather form data
+            const name = document.getElementById('contact-name').value;
+            const company = document.getElementById('contact-company').value;
+            const email = document.getElementById('contact-email').value;
+            const phone = document.getElementById('contact-phone').value;
+            const message = document.getElementById('contact-message').value;
+            
+            // Get selected contact methods
+            const contactMethod = Array.from(document.querySelectorAll('input[name="contact-method"]:checked'))
+                .map(cb => cb.value).join(', ');
+                
+            // Get updates preference
+            const updates = document.querySelector('input[name="updates"]:checked')?.value || 'No';
+
+            // Construct email body with proper formatting
+            const subject = encodeURIComponent(`UWTP Dashboard Inquiry from ${name}`);
+            const bodyContent = `Name: ${name}
+Company: ${company}
+Email: ${email}
+Phone: ${phone}
+
+Message:
+${message}
+
+Preferred Contact Method: ${contactMethod}
+Opt-in for updates: ${updates}`;
+            
+            const body = encodeURIComponent(bodyContent);
+
+            // Open default email client
+            window.location.href = `mailto:dinesh.kumar@arup.com?subject=${subject}&body=${body}`;
+            
+            // Feedback to user
+            alert('Your default email client has been opened with a draft email.\n\nPlease review and click "Send" in your email application to complete the process.');
+        });
+    }
 });
 
 
