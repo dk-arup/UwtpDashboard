@@ -70,7 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initMap() {
-    map = L.map('map').setView(INDIA_CENTER, DEFAULT_ZOOM);
+    // Initialize map with default zoom control disabled
+    map = L.map('map', { zoomControl: false }).setView(INDIA_CENTER, DEFAULT_ZOOM);
 
     const streetLayer = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
         maxZoom: 20,
@@ -96,13 +97,18 @@ function initMap() {
 
     markerLayer = L.layerGroup().addTo(map);
     
-    // Initialize Layer Control
+    // Initialize Layer Control (default position is topright)
     layerControl = L.control.layers({
         "Street Map": streetLayer,
         "Satellite (With Labels)": satelliteLayer,
         "Satellite (No Labels)": satelliteNoLabelsLayer
     }, {
         "Treatment Plants": markerLayer
+    }, { position: 'topright' }).addTo(map);
+
+    // Add Zoom Control below the Layer Control (topright)
+    L.control.zoom({
+        position: 'topright'
     }).addTo(map);
 
     // Event listener for popup open to render charts
