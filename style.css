@@ -383,3 +383,66 @@ body {
     color: var(--accent-color);
 }
 
+
+/* Contact Modal Styles */
+.form-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .form-layout-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-left-col .input-group {
+    background-color: #f1f2f6; /* Light gray background like screenshot */
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.form-left-col input {
+    background: transparent;
+    border: none;
+    width: 100%;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.form-right-col .input-group {
+    background-color: #f1f2f6;
+    padding: 10px;
+    border-radius: 4px;
+    height: 100%;   
+}
+
+#contact-form textarea {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+/* Close button for contact modal */
+.close-contact-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: #aaa;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: color 0.2s;
+}
+
+.close-contact-modal:hover {
+    color: #333;
+}
+

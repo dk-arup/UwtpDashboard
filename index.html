@@ -173,72 +173,11 @@
             </div>
         </div>
 
-        <!-- 5. Contact Us -->
-        <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <h2>Contact Us</h2>
-                <span class="icon">▼</span>
-            </div>
-            <div class="accordion-content">
-                <form id="contact-form">
-                    <div class="input-group">
-                        <label for="contact-name">Your name *</label>
-                        <input type="text" id="contact-name" required placeholder="John Doe">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="contact-company">Your company</label>
-                        <input type="text" id="contact-company" placeholder="Acme Corp">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="contact-email">Your email *</label>
-                        <input type="email" id="contact-email" required placeholder="john@example.com">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="contact-phone">Your phone (optional)</label>
-                        <input type="tel" id="contact-phone" placeholder="+1 234 567 8900">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="contact-message">Your message *</label>
-                        <textarea id="contact-message" rows="4" required placeholder="Type your message here..."></textarea>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Preferred contact method</label>
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" name="contact-method" value="phone"> Phone
-                            </label>
-                            <label>
-                                <input type="checkbox" name="contact-method" value="email"> Email
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Stay informed - opt-in to receive regular updates *</label>
-                        <div class="radio-group">
-                            <label>
-                                <input type="radio" name="updates" value="yes" required> Yes
-                            </label>
-                            <label>
-                                <input type="radio" name="updates" value="no"> No
-                            </label>
-                        </div>
-                    </div>
-
-                    <p style="font-size: 0.75rem; color: #7f8c8d; margin-bottom: 15px; line-height: 1.4;">
-                        By clicking 'Send message', you consent to allow HR Wallingford to store and process the personal information provided in this form to email you requested information. Every email will include a clear unsubscribe link. For more information on how we use your personal data please see our <a href="#" style="color: var(--accent-color);">privacy policy</a>.
-                    </p>
-
-                    <button type="submit" class="action-btn">Send message</button>
-                    <!-- Used orange color #e67e22 to match the 'CONTACT US' pill in screenshot roughly, or sticking to theme. Screenshot had orange button border? Actually it was a pill 'CONTACT US' at top left. The form button usually matches primary action. I'll use a distinct color or the theme color. The screenshot shows 'CONTACT US' in orange/red outline at top. I'll use a distinct color for the submit button to make it stand out. -->
-                </form>
-            </div>
+        <!-- Contact Us Button -->
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+            <button id="open-contact-btn" class="action-btn" style="background-color: transparent; border: 1px solid #e67e22; color: #e67e22; font-weight: bold;">CONTACT US</button>
         </div>
+
     </div> <!-- END SIDEBAR -->
 
     <!-- Modal and Scripts -->
@@ -270,6 +209,77 @@
                     <button class="btn-secondary close-modal">Cancel</button>
                     <button id="apply-query-btn" class="btn-primary">Apply Filter</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Us Modal -->
+    <div id="contact-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px; width: 90%;">
+            <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
+                <h2 style="color: #e67e22; border: 1px solid #e67e22; padding: 5px 20px; border-radius: 20px; font-size: 0.9rem; margin: 0; display: inline-block;">CONTACT US</h2>
+                <button class="close-contact-modal" style="background:none; border:none; font-size:1.8rem; cursor:pointer; color:#999;">&times;</button>
+            </div>
+            
+            <div class="modal-body" style="padding: 20px;">
+                <form id="contact-form">
+                    <div class="form-layout-grid">
+                        <!-- Left Column -->
+                        <div class="form-left-col">
+                            <div class="input-group">
+                                <label for="contact-name">Your name <span style="color:#d35400">*</span></label>
+                                <input type="text" id="contact-name" style="background-color: #f1f2f6; border: none;" required>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="contact-company">Your company</label>
+                                <input type="text" id="contact-company" style="background-color: #f1f2f6; border: none;">
+                            </div>
+        
+                            <div class="input-group">
+                                <label for="contact-email">Your email <span style="color:#d35400">*</span></label>
+                                <input type="email" id="contact-email" style="background-color: #f1f2f6; border: none;" required>
+                            </div>
+        
+                            <div class="input-group">
+                                <label for="contact-phone">Your phone (optional)</label>
+                                <input type="tel" id="contact-phone" style="background-color: #f1f2f6; border: none;">
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="form-right-col">
+                            <div class="input-group" style="height: 100%; display: flex; flex-direction: column;">
+                                <label for="contact-message">Your message <span style="color:#d35400">*</span></label>
+                                <textarea id="contact-message" required style="flex-grow: 1; resize: none; background-color: #f1f2f6; border: none; min-height: 200px; padding: 10px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-footer-section" style="margin-top: 20px;">
+                        <div class="input-group">
+                            <label>Preferred contact method</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="contact-method" value="phone"> Phone</label>
+                                <label><input type="checkbox" name="contact-method" value="email"> Email</label>
+                            </div>
+                        </div>
+    
+                        <div class="input-group">
+                            <label>Stay informed - opt-in to receive regular updates <span style="color:#d35400">*</span></label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="updates" value="yes" required> Yes</label>
+                                <label><input type="radio" name="updates" value="no"> No</label>
+                            </div>
+                        </div>
+    
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin: 20px 0; line-height: 1.4;">
+                            By clicking 'Send message', you consent to allow HR Wallingford to store and process the personal information provided in this form to email you requested information. Every email will include a clear unsubscribe link. For more information on how we use your personal data please see our <a href="#" style="color: var(--accent-color);">privacy policy</a>.
+                        </p>
+    
+                        <button type="submit" class="action-btn" style="width: auto; padding: 10px 30px; background-color: #e67e22; border-radius: 4px; font-weight: normal; text-transform: uppercase;">Send message</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

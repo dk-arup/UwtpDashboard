@@ -1063,3 +1063,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+// Contact Modal Logic
+const contactModal = document.getElementById('contact-modal');
+const openContactBtn = document.getElementById('open-contact-btn');
+const closeContactBtn = document.querySelector('.close-contact-modal');
+
+if (openContactBtn && contactModal) {
+    openContactBtn.addEventListener('click', () => {
+        contactModal.style.display = 'flex';
+    });
+}
+
+if (closeContactBtn && contactModal) {
+    closeContactBtn.addEventListener('click', () => {
+        contactModal.style.display = 'none';
+    });
+}
+
+// Close contact modal when clicking outside
+window.addEventListener('click', (event) => {
+    if (event.target === contactModal) {
+        contactModal.style.display = 'none';
+    }
+});
+
