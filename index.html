@@ -222,28 +222,30 @@
             </div>
             
             <div class="modal-body" style="padding: 20px;">
-                <form id="contact-form">
+                <!-- Updated to use Formspree for email delivery -->
+                <!-- IMPORTANT: You will receive a verification email from Formspree the first time someone submits this form. You must click verify in that email to activate it. -->
+                <form id="contact-form" action="https://formspree.io/f/dinesh.kumar@arup.com" method="POST">
                     <div class="form-layout-grid">
                         <!-- Left Column -->
                         <div class="form-left-col">
                             <div class="input-group">
                                 <label for="contact-name">Your name <span style="color:#d35400">*</span></label>
-                                <input type="text" id="contact-name" style="background-color: #f1f2f6; border: none;" required>
+                                <input type="text" id="contact-name" name="name" style="background-color: #f1f2f6; border: none;" required>
                             </div>
                             
                             <div class="input-group">
                                 <label for="contact-company">Your company</label>
-                                <input type="text" id="contact-company" style="background-color: #f1f2f6; border: none;">
+                                <input type="text" id="contact-company" name="company" style="background-color: #f1f2f6; border: none;">
                             </div>
         
                             <div class="input-group">
                                 <label for="contact-email">Your email <span style="color:#d35400">*</span></label>
-                                <input type="email" id="contact-email" style="background-color: #f1f2f6; border: none;" required>
+                                <input type="email" id="contact-email" name="email" style="background-color: #f1f2f6; border: none;" required>
                             </div>
         
                             <div class="input-group">
                                 <label for="contact-phone">Your phone (optional)</label>
-                                <input type="tel" id="contact-phone" style="background-color: #f1f2f6; border: none;">
+                                <input type="tel" id="contact-phone" name="phone" style="background-color: #f1f2f6; border: none;">
                             </div>
                         </div>
 
@@ -251,7 +253,7 @@
                         <div class="form-right-col">
                             <div class="input-group" style="height: 100%; display: flex; flex-direction: column;">
                                 <label for="contact-message">Your message <span style="color:#d35400">*</span></label>
-                                <textarea id="contact-message" required style="flex-grow: 1; resize: none; background-color: #f1f2f6; border: none; min-height: 200px; padding: 10px;"></textarea>
+                                <textarea id="contact-message" name="message" required style="flex-grow: 1; resize: none; background-color: #f1f2f6; border: none; min-height: 200px; padding: 10px;"></textarea>
                             </div>
                         </div>
                     </div>
