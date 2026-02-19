@@ -1054,11 +1054,43 @@ document.addEventListener('DOMContentLoaded', function() {
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            // In a real app, you would send data to a backend here.
-            // For now, we simulate a successful submission.
+            
+            // Gather form data
             const name = document.getElementById('contact-name').value;
-            alert('Thank you, ' + name + '! Your message has been sent.');
-            contactForm.reset();
+            const company = document.getElementById('contact-company').value;
+            const email = document.getElementById('contact-email').value;
+            const phone = document.getElementById('contact-phone').value;
+            const message = document.getElementById('contact-message').value;
+            
+            // Get selected contact methods
+            const contactMethod = Array.from(document.querySelectorAll('input[name="contact-method"]:checked'))
+                .map(cb => cb.value).join(', ');
+                
+            // Get updates preference
+            const updates = document.querySelector('input[name="updates"]:checked')?.value || 'No';
+
+            // Construct email body
+            const subject = encodeURIComponent(`UWTP Dashboard Inquiry from ${name}`);
+            const body = encodeURIComponent(
+`Name: ${name}
+Company: ${company}
+Email: ${email}
+Phone: ${phone}
+
+Message:
+${message}
+
+Preferred Contact Method: ${contactMethod}
+Opt-in for updates: ${updates}
+`
+            );
+
+            // Open default email client
+            window.location.href = `mailto:dinesh.kumar@arup.com?subject=${subject}&body=${body}`;
+            
+            // Optional: Close modal or show feedback
+            alert('Your email client should open now. Please hit send to complete your inquiry.');
+            // contactForm.reset(); // Consider not resetting immediately so they can see what they are sending
         });
     }
 });
