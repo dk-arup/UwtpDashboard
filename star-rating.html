@@ -18,17 +18,84 @@
 
     <div id="map"></div>
 
+    <!-- STAR RATING LEGEND OVERLAY (Moved outside sidebar so it floats over map) -->
+    <div id="star-legend-container" style="position: absolute; bottom: 30px; left: 30px; z-index: 1000; background: white; padding: 15px; border-radius: 4px; box-shadow: 0 0 15px rgba(0,0,0,0.2); min-width: 200px;">
+         <h4 style="margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #eee; padding-bottom: 8px; color: #333;">Legend</h4>
+         
+         <!-- 1 Star -->
+         <div style="font-size: 0.95rem; display: flex; align-items: center; margin-bottom: 8px;">
+             <span style="color: #34495e; font-size: 1.4rem; margin-right: 12px; line-height: 1;">★</span>
+             <strong>1 Star</strong>
+         </div>
+         
+         <!-- 2 Stars -->
+         <div style="font-size: 0.95rem; display: flex; align-items: center; margin-bottom: 8px;">
+             <span style="color: #e67e22; font-size: 1.4rem; margin-right: 12px; line-height: 1;">★</span>
+             <strong>2 Stars</strong>
+         </div>
+
+         <!-- 3 Stars -->
+         <div style="font-size: 0.95rem; display: flex; align-items: center; margin-bottom: 8px;">
+             <span style="color: #f39c12; font-size: 1.4rem; margin-right: 12px; line-height: 1;">★</span>
+             <strong>3 Stars</strong>
+         </div>
+         
+         <!-- 4 Stars -->
+         <div style="font-size: 0.95rem; display: flex; align-items: center; margin-bottom: 8px;">
+             <span style="color: #9b59b6; font-size: 1.4rem; margin-right: 12px; line-height: 1;">★</span>
+             <strong>4 Stars</strong>
+         </div>
+
+         <!-- 5 Stars -->
+         <div style="font-size: 0.95rem; display: flex; align-items: center; margin-bottom: 0;">
+             <span style="color: #e91e63; font-size: 1.4rem; margin-right: 12px; line-height: 1;">★</span>
+             <strong>5 Stars</strong>
+         </div>
+    </div>
+
     <div class="control-panel">
         
-        <!-- Navigation to Star Rating -->
+        <!-- Navigation Back -->
         <div style="margin-bottom: 20px; text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-            <a href="star-rating.html" style="display: block; width: 100%; padding: 12px; background: #3498db; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; text-align: center;">
-                Switch to Star Rating View &rarr;
+            <a href="index.html" style="display: block; width: 100%; padding: 12px; background: #95a5a6; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; text-align: center;">
+                &larr; Back to Compliance
             </a>
+            <h2 style="margin: 10px 0 0 0; color: #2c3e50;">Star Rating</h2>
         </div>
 
-        <!-- 1. State Filter (Common) -->
-        <div class="accordion-item">
+        <!-- 0. Visit Filter (Moved Above State) -->
+        <div class="accordion-item" style="border: 2px solid #3498db; background: #eaf2f8;">
+            <div class="accordion-header active" onclick="toggleAccordion(this)">
+                <h2 style="color: #2980b9;">Filter by Visit</h2>
+                <span class="icon" style="transform: rotate(180deg);">▼</span>
+            </div>
+            <div class="accordion-content" style="display: block;">
+                
+                <h4 style="margin: 0 0 10px 0; font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase;">Select Visit Phase:</h4>
+
+                <!-- Visit 2 A -->
+                <label style="display:flex; align-items:center; margin-bottom:12px; cursor:pointer; padding: 8px; background: white; border: 1px solid #ddd; border-radius: 4px; transition: all 0.2s;">
+                    <input type="radio" name="star-mode" value="vist2" checked style="margin-right: 12px; transform: scale(1.2);"> 
+                    <div>
+                        <strong style="display:block; color: #2c3e50; font-size: 1rem;">Visit 2 - A</strong> 
+                        <span style="font-size:0.75rem; color:#7f8c8d;">(Performance Assessment)</span>
+                    </div>
+                </label>
+
+                <!-- Visit 3 A -->
+                <label style="display:flex; align-items:center; cursor:pointer; padding: 8px; background: white; border: 1px solid #ddd; border-radius: 4px; transition: all 0.2s;">
+                    <input type="radio" name="star-mode" value="visit3" style="margin-right: 12px; transform: scale(1.2);"> 
+                    <div>
+                        <strong style="display:block; color: #2c3e50; font-size: 1rem;">Visit 3 - A</strong> 
+                        <span style="font-size:0.75rem; color:#7f8c8d;">(Issues & Challenges)</span>
+                    </div>
+                </label>
+
+            </div>
+        </div>
+
+        <!-- 1. State Filter (Common - HIDDEN REQUESTED) -->
+        <div class="accordion-item" style="display:none;">
             <div class="accordion-header active" onclick="toggleAccordion(this)">
                 <h2>State Filter</h2>
                 <span class="icon" style="transform: rotate(180deg);">▼</span>
@@ -43,8 +110,8 @@
             </div>
         </div>
 
-        <!-- COMPLIANCE MODULE WRAPPER -->
-        <div id="compliance-module" style="display:block;">
+        <!-- COMPLIANCE MODULE HIDDEN -->
+        <div id="compliance-module" style="display:none;">
             
             <div style="padding: 10px 0; border-bottom: 1px solid #eee; margin-bottom: 15px; color: #888; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">
                 Compliance Controls
@@ -185,10 +252,39 @@
             </div> <!-- End compliance-controls-inner -->
         </div> <!-- End Compliance Module -->
 
-        <!-- STAR RATING REMOVED (Moved to star-rating.html) -->
+        <!-- STAR RATING MODULE -->
+        <div id="star-rating-module" style="display:block;">
+            <div style="padding: 10px 0; border-bottom: 1px solid #eee; margin-bottom: 15px; color: #888; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">
+                Advanced Controls
+            </div>
+            
+            <div id="star-rating-controls" style="display:block;">     
+                <!-- Filter by Specific Rating -->
+                <div class="accordion-item">
+                     <div class="accordion-header active" onclick="toggleAccordion(this)">
+                        <h2>Filter by Rating</h2>
+                        <span class="icon" style="transform: rotate(180deg);">▼</span>
+                    </div>
+                    <div class="accordion-content" style="display:block;">
+                        <div class="input-group">
+                            <label>Show Only:</label>
+                            <select id="filter-star-min" class="dropdown-select">
+                                <option value="0">All Ratings</option>
+                                <option value="5">5 Stars Only</option>
+                                <option value="4">4 Stars Only</option>
+                                <option value="3">3 Stars Only</option>
+                                <option value="2">2 Stars Only</option>
+                                <option value="1">1 Star Only</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <!-- Static Bottom Left Legend - Not needed for Compliance View -->
-        <!-- Legend logic handled by app.js and mainly for star rating -->
+
+        <!-- Static Bottom Left Legend REMOVED from Sidebar -->
+
 
         <div class="status-summary">
             <div class="status-item">Plants Shown: <strong id="count-total">0</strong></div>

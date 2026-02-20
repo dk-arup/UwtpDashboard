@@ -4,6 +4,8 @@ let markerLayer;
 let boundaryLayer; // Global reference for Boundary Layer
 let layerControl; // Global reference for Layer Control
 let plantsData = []; // Normalized data
+let starPlantsData = []; // Normalized data for Star Rating
+let currentTab = 'compliance'; // compliance | star-rating
 let advancedClauses = []; // Global for Advanced Query Filter
 const INDIA_CENTER = [22.5937, 82.9629];
 const DEFAULT_ZOOM = 4;
@@ -61,10 +63,61 @@ window.toggleAccordion = function(header) {
     }
 };
 
+// Helper to set UI visibility based on page mode
+function setPageMode(mode) {
+    currentTab = mode;
+    console.log(`Setting Page Mode: ${mode}`);
+    
+    const legend = document.getElementById('star-legend-container');
+    // If legend is outside control panel (absolute), it's just 'star-legend-container'
+    // But verify if it was moved. The HTML shows it with this ID.
+
+    const sm = document.getElementById('star-rating-module'); // Assuming wrapper for star controls
+    const cm = document.getElementById('compliance-module');
+    
+    // In star-rating.html, we don't have 'star-rating-module' wrapper maybe?
+    // We have Visit Filter moved to top. And Compliance Module hidden by default.
+    // Let's rely on classes or just specific IDs if possible.
+    
+    // But wait, the HTML structure in star-rating.html has:
+    // <div id="compliance-module" style="display:none;">
+    
+    if (mode === 'star-rating') {
+        if (sm) sm.style.display = 'block';
+        if (cm) cm.style.display = 'none';
+        
+        // Show Legend
+        if (legend) legend.style.display = 'block';
+        
+        // Hide Compliance controls if they are loose
+        const complControls = document.getElementById('compliance-controls-inner');
+        if (complControls) complControls.style.display = 'none';
+        
+    } else {
+        // Compliance Mode
+        if (cm) cm.style.display = 'block';
+        if (sm) sm.style.display = 'none';
+        
+        // Hide Legend
+        if (legend) legend.style.display = 'none';
+        
+        const complControls = document.getElementById('compliance-controls-inner');
+        if (complControls) complControls.style.display = 'block';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Determine Mode from URL
+    const isStarPage = window.location.href.includes('star-rating.html');
+    const mode = isStarPage ? 'star-rating' : 'compliance';
+    
+    // 2. Set UI State immediately
+    setPageMode(mode);
+
+    // 3. Initialize App
     initMap();
     initListeners();
-    initAdvancedFilter(); // New Function
+    initAdvancedFilter(); 
     loadBoundaries();
     loadData();
 });
@@ -285,6 +338,26 @@ function initListeners() {
     const stateSelect = document.getElementById('state-select');
     if (stateSelect) {
         stateSelect.addEventListener('change', () => updateMap(true));
+    }
+
+    // Star Filters (Restored)
+    // 1. Radio Buttons for Mode
+    document.querySelectorAll('input[name="star-mode"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+             if (currentTab === 'star-rating') {
+                 // Reset state filter to 'All' to show whole India? Or keep. 
+                 // Keeping current state selection is better UX usually.
+                 updateStarMap(true); 
+             }
+        });
+    });
+
+    // 2. Min Rating Filter
+    const starMinSelect = document.getElementById('filter-star-min');
+    if (starMinSelect) {
+        starMinSelect.addEventListener('change', () => {
+             if (currentTab === 'star-rating') updateStarMap();
+        });
     }
 
     // 2. Capacity Button
@@ -640,12 +713,23 @@ function checkPlantAgainstClauses(plant, clauses) {
 
 async function loadData() {
     try {
-        const response = await fetch('data/csvjson.json');
-        if (!response.ok) throw new Error("Failed to load data");
+        // Load Compliance Data (Original)
+        const response1 = await fetch('data/csvjson.json');
+        if (!response1.ok) throw new Error("Failed to load compliance data");
+        const rawData1 = await response1.json();
+        normalizeData(rawData1);
         
-        const rawData = await response.json();
-        normalizeData(rawData);
-        
+        // Load Star Rating Data (New)
+        try {
+            const response2 = await fetch('data/star_ratings.json');
+            if (response2.ok) {
+                const rawData2 = await response2.json();
+                normalizeStarData(rawData2);
+            }
+        } catch (e) {
+            console.warn("Could not load star rating data", e);
+        }
+
         populateStateFilter();
         updateMap();
         
@@ -653,6 +737,67 @@ async function loadData() {
         console.error('Error loading data:', error);
         alert('Error loading plant data. See console for details.');
     }
+}
+
+// Function switchTab removed as it is replaced by switchDashboardMode
+// If any other switching logic is needed, add it to switchDashboardMode
+
+function normalizeStarData(rawData) {
+    console.log("Normalizing Star Data...");
+    starPlantsData = rawData.map(row => {
+        const id = row['UWTP ID'];
+        const state = row['State'];
+        // The new file used 'lat' and 'long' lowercase or Latlong string
+        let lat = parseFloat(row['lat']); 
+        let lng = parseFloat(row['long']);
+        
+        // Fallback checks
+        if (isNaN(lat)) lat = parseFloat(row['Latitude']);
+        if (isNaN(lng)) lng = parseFloat(row['Longitude']);
+        
+        if (isNaN(lat) || isNaN(lng)) {
+             if (row['Latlong']) {
+                 const p = row['Latlong'].split(',');
+                 if (p.length === 2) {
+                     lat = parseFloat(p[0]);
+                     lng = parseFloat(p[1]);
+                 }
+             }
+        }
+
+        if (isNaN(lat) || isNaN(lng)) return null;
+
+        // Ratings
+        // Note: Field names might have changed slightly in Python processing?
+        // Let's use flexible access if possible or rely on previous inspection.
+        // Convert_csv saw: 'VIST 2', 'Visit Three Star rating' in new CSV.
+        // It converted to JSON. JSON keys match CSV headers.
+        
+        let starsGreen = 0;
+        let starsRed = 0;
+        
+        // Revised Logic for uwtp_200226_1.csv
+        // Check for new columns VIST_2A (Green) and VISIT_3A (Red)
+        // If not found, fallback to old columns
+        
+        if (row['VIST_2A'] !== undefined && row['VIST_2A'] !== '') starsGreen = parseFloat(row['VIST_2A']) || 0;
+        else if (row['VIST 2'] !== undefined) starsGreen = parseFloat(row['VIST 2']) || 0;
+        
+        if (row['VISIT_3A'] !== undefined && row['VISIT_3A'] !== '') starsRed = parseFloat(row['VISIT_3A']) || 0;
+        else if (row['Visit Three Star rating'] !== undefined) starsRed = parseFloat(row['Visit Three Star rating']) || 0;
+        
+        // Design Capacity (in MLD)
+        const cap = parseFloat(row['Design Capacity (in MLD)']) || 0;
+
+        return {
+            id, state, lat, lng, 
+            capacity: cap,
+            starsGreen, starsRed,
+            ulbName: row['ULB Name'], 
+            uwtpName: row['UWTP Name/Location']
+        };
+    }).filter(p => p !== null);
+    console.log(`Loaded ${starPlantsData.length} star rating plants.`);
 }
 
 function normalizeData(rawData) {
@@ -749,7 +894,165 @@ function populateStateFilter() {
     });
 }
 
+function updateBoundaries(stateFilter) {
+    if (!boundaryLayer) return;
+    
+    // Cleanly access the file-scoped constant
+    const targetCode = (stateFilter !== 'All' && typeof STATE_CODES !== 'undefined') ? STATE_CODES[stateFilter] : null;
+
+    boundaryLayer.eachLayer(layer => {
+        const props = layer.feature.properties;
+        const layerStateCode = props.State; 
+
+        if (stateFilter === 'All') {
+            layer.setStyle({
+                color: '#2c3e50', 
+                weight: 2,
+                opacity: 0.8,
+                fillColor: '#f1f1f1', 
+                fillOpacity: 0.1
+            });
+        } else if (targetCode && layerStateCode === targetCode) {
+            layer.setStyle({
+                color: '#d35400', 
+                weight: 4,
+                opacity: 1,
+                fillColor: '#e67e22',
+                fillOpacity: 0.2
+            });
+            layer.bringToFront();
+        } else {
+            layer.setStyle({
+                color: '#95a5a6', 
+                weight: 1,
+                opacity: 0.2, 
+                fillColor: '#fff',
+                fillOpacity: 0
+            });
+        }
+    });
+}
+
+// --- STAR RATING MAP LOGIC ---
+function updateStarMap(shouldFitBounds = false) {
+    if (!starPlantsData || starPlantsData.length === 0) return;
+
+    markerLayer.clearLayers();
+    
+    // Get Current Mode (Radio)
+    const modeEl = document.querySelector('input[name="star-mode"]:checked');
+    const starMode = modeEl ? modeEl.value : 'vist2'; // Default to Visit 2
+
+    // Get Filter (Min Rating)
+    const minRating = parseInt(document.getElementById('filter-star-min')?.value || '0');
+
+    // Get State Filter for Boundaries (but plants might be All)
+    const stateFilter = document.getElementById('state-select').value;
+    updateBoundaries(stateFilter);
+    
+    let shownCount = 0;
+    const visibleBounds = [];
+    
+    starPlantsData.forEach(plant => {
+        // 1. State Filter
+        if (stateFilter !== 'All' && plant.state !== stateFilter) return;
+
+        // 2. Rating Logic
+        const g = plant.starsGreen || 0;
+        const r = plant.starsRed || 0;
+        
+        // Determine Rating based on Mode
+        let rating = 0;
+        if (starMode === 'vist2') {
+            rating = g;
+        } else {
+            rating = r;
+        }
+
+        // 3. Filter Logic
+        if (minRating > 0) {
+             if (rating !== minRating) return;
+        }
+
+        // 4. Visualization
+        shownCount++;
+        visibleBounds.push([plant.lat, plant.lng]);
+        
+        // Function to get color based on user request - Updated for 1-5 Star Legend
+        const getRatingColor = (score) => {
+            if (score === 0 || score === null) return '#7f8c8d'; 
+            if (score === 1) return '#34495e';
+            if (score === 2) return '#e67e22';
+            if (score === 3) return '#f39c12'; 
+            if (score === 4) return '#9b59b6';
+            if (score === 5) return '#e91e63'; 
+            return '#95a5a6'; 
+        };
+
+        const primaryColor = getRatingColor(rating);
+        const gColor = getRatingColor(g);
+        const rColor = getRatingColor(r);
+        
+        const circle = L.circleMarker([plant.lat, plant.lng], {
+            radius: 8,
+            color: '#fff', 
+            weight: 1,
+            fillColor: primaryColor,
+            fillOpacity: 0.8
+        });
+        
+        const badgeStyle = "padding: 4px 8px; border-radius: 12px; color: white; font-weight: bold; font-size: 0.8rem; text-align: center; min-width: 60px; display: inline-block;";
+        
+        const popupContent = `
+            <div class="popup-content star-popup">
+                <h3>${plant.uwtpName || plant.ulbName || plant.id || 'Unknown Plant'}</h3>
+                <div class="metric-row">
+                    <span class="label">State:</span>
+                    <span class="value">${plant.state}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Capacity:</span>
+                    <span class="value">${plant.capacity.toFixed(2)} MLD</span>
+                </div>
+                <div style="margin-top: 10px; border-top: 1px dashed #eee; padding-top: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; ${starMode === 'vist2' ? 'background: #f0f0f0; padding: 2px;' : ''}">
+                        <span class="label">Visit 2 - A:</span>
+                        <span style="${badgeStyle} background-color: ${g > 0 ? gColor : '#ccc'};">
+                            ${g > 0 ? g + ' ★' : 'N/A'}
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; ${starMode === 'visit3' ? 'background: #f0f0f0; padding: 2px;' : ''}">
+                        <span class="label">Visit 3 - A:</span>
+                        <span style="${badgeStyle} background-color: ${r > 0 ? rColor : '#ccc'};">
+                            ${r > 0 ? r + ' ★' : 'N/A'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        circle.bindPopup(popupContent);
+        markerLayer.addLayer(circle);
+    });
+
+    document.getElementById('count-total').textContent = shownCount;
+
+    if (shouldFitBounds) {
+        if (stateFilter === 'All') {
+            map.flyTo(INDIA_CENTER, DEFAULT_ZOOM);
+        } else if (visibleBounds.length > 0) {
+            const bounds = L.latLngBounds(visibleBounds);
+            // Don't zoom in too close for sparse points
+            map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 10 });
+        }
+    }
+}
+
 function updateMap(shouldFitBounds = false) {
+    if (currentTab === 'star-rating') {
+        updateStarMap(shouldFitBounds);
+        return;
+    }
     markerLayer.clearLayers();
     
     // 1. Get Inputs

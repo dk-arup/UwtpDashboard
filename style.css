@@ -446,3 +446,12 @@ body {
     color: #333;
 }
 
+
+/* Star Rating Tabs */
+.dashboard-tabs { display: flex; margin-bottom: 15px; border-bottom: 2px solid #ecf0f1; }
+.tab-btn { flex: 1; padding: 10px; border: none; background: none; cursor: pointer; font-weight: bold; color: #95a5a6; border-bottom: 3px solid transparent; transition: all 0.3s; }
+.tab-btn:hover { color: #34495e; background-color: #f9f9f9; }
+.tab-btn.active { color: #2c3e50; border-bottom-color: #3498db; }
+.star-rating-info { border: 1px solid #eee; }
+
+@
